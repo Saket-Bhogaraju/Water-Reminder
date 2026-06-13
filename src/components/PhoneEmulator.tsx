@@ -30,6 +30,8 @@ interface PhoneEmulatorProps {
   logs: WaterLog[];
   setLogs: (l: WaterLog[]) => void;
   onDrinkLogged: (amount: number) => void;
+  isDarkMode: boolean;
+  setIsDarkMode: (d: boolean) => void;
 }
 
 export default function PhoneEmulator({
@@ -39,7 +41,9 @@ export default function PhoneEmulator({
   setPreferences,
   logs,
   setLogs,
-  onDrinkLogged
+  onDrinkLogged,
+  isDarkMode,
+  setIsDarkMode
 }: PhoneEmulatorProps) {
   // Emulator environment states
   const [phoneScreen, setPhoneScreen] = useState<'app' | 'launcher' | 'lockscreen'>('app');
@@ -308,7 +312,7 @@ export default function PhoneEmulator({
         </div>
 
         {/* Primary Screen Display Frame */}
-        <div className="relative w-full flex-1 bg-zinc-50 rounded-[34px] overflow-hidden flex flex-col justify-between select-none">
+        <div className={`relative w-full flex-1 rounded-[34px] overflow-hidden flex flex-col justify-between select-none transition-all duration-300 ${isDarkMode ? 'bg-zinc-900 text-white font-semibold' : 'bg-zinc-50 text-zinc-800'}`}>
           
           <AnimatePresence mode="wait">
             {!profile.isCompletedOnboarding ? (
@@ -318,7 +322,7 @@ export default function PhoneEmulator({
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                className="absolute inset-0 bg-white p-5 flex flex-col justify-between overflow-y-auto no-scrollbar"
+                className={`absolute inset-0 p-5 flex flex-col justify-between overflow-y-auto no-scrollbar transition-all ${isDarkMode ? 'bg-zinc-900 text-white' : 'bg-white text-zinc-800'}`}
               >
                 <div className="flex flex-col gap-3">
                   <div className="pt-6">
@@ -776,11 +780,26 @@ export default function PhoneEmulator({
                             </div>
                           </div>
 
+                          {/* Dark Mode Theme configuration toggle */}
+                          <div className={`rounded-2xl p-3 border shadow-sm flex justify-between items-center ${isDarkMode ? 'bg-zinc-800/80 border-zinc-700/60' : 'bg-white border-zinc-100'}`}>
+                            <span className={`text-[10px] font-extrabold uppercase tracking-wider ${isDarkMode ? 'text-zinc-300' : 'text-zinc-400'}`}>Dark Mode active</span>
+                            <button
+                              id="btn-toggle-dark-mode"
+                              onClick={() => {
+                                setIsDarkMode(!isDarkMode);
+                                triggerToast(`Dark Mode toggled ${!isDarkMode ? 'ON' : 'OFF'}! 🌙`);
+                              }}
+                              className={`w-12 h-6 flex items-center rounded-full p-1 cursor-pointer transition-all ${isDarkMode ? 'bg-[#0381fe] justify-end' : 'bg-zinc-300 justify-start'}`}
+                            >
+                              <div className="bg-white w-4 h-4 rounded-full shadow-md"></div>
+                            </button>
+                          </div>
+
                           {/* Export CSV Data element */}
                           <button
                             id="btn-export-csv"
                             onClick={handleExportCSV}
-                            className="bg-zinc-800 hover:bg-zinc-950 text-white rounded-2xl py-2 px-4 shadow-md flex items-center justify-center gap-2 text-xs font-bold transition-all"
+                            className={`rounded-2xl py-2 px-4 shadow-md flex items-center justify-center gap-2 text-xs font-bold transition-all ${isDarkMode ? 'bg-zinc-700 hover:bg-zinc-600 text-white' : 'bg-zinc-800 hover:bg-zinc-950 text-white'}`}
                           >
                             <FileDown className="w-4 h-4" />
                             <span>Export Data Backup (CSV)</span>

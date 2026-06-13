@@ -19,21 +19,21 @@ import { androidCodebaseExtra } from '../androidCodeExtra';
 export default function CodeViewer() {
   const allFiles: CodeFile[] = [...androidCodebase, ...androidCodebaseExtra];
 
-  const [selectedFile, setSelectedFile] = useState<CodeFile>(allFiles[3]); // Default to Room WaterLog.kt
+  const [selectedFile, setSelectedFile] = useState<CodeFile>(allFiles[3]); // Default to MainActivity.kt
   const [copied, setCopied] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [activeTab, setActiveTab] = useState<'explorer' | 'instructions'>('explorer');
 
   // Directory visual group mapper
   const categorizePath = (path: string): string => {
-    if (path.startsWith('app/src/main/java/com/hydromind/app/ui/')) {
-      return '💥 UI Screens (Compose)';
-    }
-    if (path.startsWith('app/src/main/java/com/hydromind/app/data/')) {
-      return '🗄️ Database & Storage (Room)';
+    if (path.startsWith('app/src/main/java/com/hydromind/app/bridge/') || path.endsWith('MainActivity.kt')) {
+      return '🔌 JS Bridge & Activity';
     }
     if (path.startsWith('app/src/main/java/com/hydromind/app/notification/') || path.startsWith('app/src/main/java/com/hydromind/app/widget/')) {
-      return '📲 Widgets & Alarms';
+      return '📲 Widgets & WorkManager';
+    }
+    if (path.startsWith('app/src/main/res/')) {
+      return '🎨 XML Layouts & Res';
     }
     return '⚙️ Configuration & Manifests';
   };
@@ -191,63 +191,63 @@ export default function CodeViewer() {
         </div>
       ) : (
         // EXHAUSTIVE DIRECTIVES ON HOW TO DEPLOY TO MOBILE
-        <div className="flex-1 overflow-y-auto p-6 flex flex-col gap-6 md:gap-8 scrollbar-thin">
+        <div className="flex-1 overflow-y-auto p-6 flex flex-col gap-6 md:gap-8 scrollbar-thin bg-zinc-950 text-white rounded-b-3xl">
           
           <div className="flex flex-col gap-1.5 border-b border-zinc-800 pb-4">
             <h3 className="text-lg font-black text-white tracking-tight flex items-center gap-2">
               <BookOpen className="w-5 h-5 text-[#0381fe]" />
-              <span>Android Deployment Blueprint Guide</span>
+              <span>Android WebView Deployment Blueprint</span>
             </h3>
-            <p className="text-xs text-zinc-400">Implement these clean modular blocks inside Android Studio to deploy HydroMind with a responsive home-screen widget natively.</p>
+            <p className="text-xs text-zinc-400">How to convert the existing Vite web client into a native Android app wrapper built on Android Studio.</p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="bg-zinc-950/60 p-4 border border-zinc-800 rounded-2xl flex flex-col gap-2 shadow-inner">
+            <div className="bg-zinc-900/60 p-4 border border-zinc-800 rounded-2xl flex flex-col gap-2 shadow-inner">
               <span className="text-xl font-bold bg-[#0381fe] text-white w-7 h-7 rounded-full flex items-center justify-center font-mono shadow-md">1</span>
-              <h4 className="text-xs font-black text-zinc-100 uppercase mt-1">Configure build.gradle</h4>
+              <h4 className="text-xs font-black text-zinc-100 uppercase mt-1">Bundle Front-End</h4>
               <p className="text-[11px] text-zinc-400 leading-normal font-medium leading-relaxed">
-                Add standard dependencies in your app module. Declare Hilt plugins, Jetpack Compose Material 3 UI kits, and Room compilers inside the `build.gradle` structures.
+                Run <code className="bg-zinc-950/80 px-1 py-0.5 rounded font-mono text-cyan-400">npm run build</code> in your web workspace folder. This produces optimized index.html, JS, and CSS files in the <code className="bg-zinc-950/80 px-1 py-0.5 rounded font-mono text-cyan-400">dist/</code> package.
               </p>
             </div>
             
-            <div className="bg-zinc-950/60 p-4 border border-zinc-800 rounded-2xl flex flex-col gap-2 shadow-inner">
+            <div className="bg-zinc-900/60 p-4 border border-zinc-800 rounded-2xl flex flex-col gap-2 shadow-inner">
               <span className="text-xl font-bold bg-[#0381fe] text-white w-7 h-7 rounded-full flex items-center justify-center font-mono shadow-md">2</span>
-              <h4 className="text-xs font-black text-zinc-100 uppercase mt-1">Bind Manifest Permissions</h4>
+              <h4 className="text-xs font-black text-zinc-100 uppercase mt-1">Copy to Assets</h4>
               <p className="text-[11px] text-zinc-400 leading-normal font-medium leading-relaxed">
-                Ensure `AndroidManifest.xml` states the required POST_NOTIFICATIONS, RECEIVE_BOOT_COMPLETED, and SCHEDULE_EXACT_ALARM privileges for Background Worker schedules.
+                In Android Studio, create a folder named <code className="bg-zinc-950/80 px-1 py-0.5 rounded font-mono text-cyan-400">app/src/main/assets/</code> and copy all build artifacts directly there (so <code className="text-white font-mono">index.html</code> is at root).
               </p>
             </div>
 
-            <div className="bg-zinc-950/60 p-4 border border-zinc-800 rounded-2xl flex flex-col gap-2 shadow-inner">
+            <div className="bg-zinc-900/60 p-4 border border-zinc-800 rounded-2xl flex flex-col gap-2 shadow-inner">
               <span className="text-xl font-bold bg-[#0381fe] text-white w-7 h-7 rounded-full flex items-center justify-center font-mono shadow-md">3</span>
-              <h4 className="text-xs font-black text-zinc-100 uppercase mt-1">Add Widget Asset File XML</h4>
+              <h4 className="text-xs font-black text-zinc-100 uppercase mt-1">Binds JS Bridge</h4>
               <p className="text-[11px] text-zinc-400 leading-normal font-medium leading-relaxed">
-                Create `app/src/main/res/xml/hydro_widget_info.xml` parameters to declare sizes, responsive rescaling, updates periods (30 mins), and previews.
+                The web application calls <code className="bg-zinc-950/80 px-1 py-0.5 rounded font-mono text-emerald-400">window.AndroidApp.logWater(ml)</code> or <code className="bg-zinc-950/80 px-1 py-0.5 rounded font-mono text-emerald-400">updateProgress()</code> to sync with notifications, widgets, and background workers!
               </p>
             </div>
           </div>
 
-          <div className="bg-zinc-950/40 border border-zinc-800/80 rounded-2xl p-4 flex flex-col gap-3">
+          <div className="bg-zinc-900/40 border border-zinc-800/80 rounded-2xl p-4 flex flex-col gap-3">
             <h4 className="text-xs font-extrabold text-zinc-200 uppercase tracking-wider flex items-center gap-1.5 select-none">
               <Terminal className="w-4 h-4 text-emerald-400" />
-              <span>Step-by-step Execution Directives:</span>
+              <span>Step-by-step Setup Guide:</span>
             </h4>
             
             <ol className="list-decimal pl-5 text-[11px] text-zinc-300 font-semibold flex flex-col gap-2.5">
               <li>
-                <span className="text-white font-bold font-mono">Launch Android Studio:</span> Create a new empty views project using target SDK 34 and Compose features. Set package location to <code className="bg-zinc-900 border border-zinc-800 text-cyan-400 px-1 py-0.5 rounded font-mono">com.hydromind.app</code>.
+                <span className="text-white font-bold font-mono">Create New Project:</span> Open Android Studio, selection "New Project" &gt; "Empty Views Activity". Pick Kotlin and set Target SDK 34. Match application package id: <code className="bg-zinc-900 border border-zinc-800 text-cyan-400 px-1 py-0.5 rounded font-mono">com.hydromind.app</code>.
               </li>
               <li>
-                <span className="text-white font-bold font-mono">Create Directory Tree:</span> Organize folders: <code className="bg-zinc-900 border border-zinc-800 text-cyan-400 px-1 py-0.5 rounded font-mono">data/local</code>, <code className="bg-zinc-900 border border-zinc-800 text-cyan-400 px-1 py-0.5 rounded font-mono">data/model</code>, <code className="bg-zinc-900 border border-zinc-800 text-cyan-400 px-1 py-0.5 rounded font-mono">ui/home</code>, <code className="bg-zinc-900 border border-zinc-800 text-cyan-400 px-1 py-0.5 rounded font-mono">ui/onboarding</code>, and <code className="bg-zinc-900 border border-zinc-800 text-cyan-400 px-1 py-0.5 rounded font-mono">widget</code>.
+                <span className="text-white font-bold font-mono">Configure Gradle Bulks:</span> Open <code className="text-white font-mono">build.gradle</code> files and declare WorkManager dependencies, permissions configs, and layout engines.
               </li>
               <li>
-                <span className="text-white font-bold font-mono">Copy-Paste Files:</span> Click individual files in our Project Explorer on the left, copy them, and update corresponding files in your Java directory.
+                <span className="text-white font-bold font-mono">Setup Assets WebView:</span> Add WebView element to your <code className="text-white font-mono">activity_main.xml</code> layout. Synchronize your Java folders for <code className="text-cyan-400 font-mono">bridge</code>, <code className="text-cyan-400 font-mono">widget</code>, and <code className="text-cyan-400 font-mono">notification</code>.
               </li>
               <li>
-                <span className="text-white font-bold font-mono">Setup XML Widget resources:</span> Create `hydro_widget.xml` layout inside resource layouts matching standard widgets metrics (horizontal bar with progress trackers).
+                <span className="text-white font-bold font-mono">Build Widget layout:</span> Match widget remote elements in <code className="text-white font-mono">hydro_widget.xml</code> and declare receiver properties in Manifest. Set up WorkManager reminders triggers.
               </li>
               <li>
-                <span className="text-white font-bold font-mono">Build & Deploy:</span> Plug in your physical Samsung Galaxy Android 12+ device (or active emulator), toggle USB Debugging, click "Run app". Add the Widget from the One UI Home launcher.
+                <span className="text-white font-bold font-mono">Sync Dark / Light Theme:</span> Native toggles write directly to shared preference variables, applying theme configurations inside WebView seamlessly!
               </li>
             </ol>
           </div>

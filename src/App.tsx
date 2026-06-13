@@ -87,6 +87,14 @@ export default function App() {
     localStorage.setItem('hydromind_logs', JSON.stringify(logs));
   }, [logs]);
 
+  const [isDarkMode, setIsDarkMode] = useState<boolean>(() => {
+    return localStorage.getItem('hydromind_dark_mode') === 'true';
+  });
+
+  useEffect(() => {
+    localStorage.setItem('hydromind_dark_mode', String(isDarkMode));
+  }, [isDarkMode]);
+
   // Log a water drink amount
   const handleDrinkLogged = (amountMl: number) => {
     const newLog: WaterLog = {
@@ -199,6 +207,8 @@ export default function App() {
               logs={logs}
               setLogs={setLogs}
               onDrinkLogged={handleDrinkLogged}
+              isDarkMode={isDarkMode}
+              setIsDarkMode={setIsDarkMode}
             />
           </section>
 
